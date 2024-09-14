@@ -11,6 +11,7 @@ interface SignatureData {
 }
 
 interface Signature extends SignatureData {
+    fontClass: string;
     x: number;
     y: number;
     width: number;
@@ -66,7 +67,7 @@ const SignatureImage: React.FC<SignatureImageProps> = ({ signature, isSelected, 
                     height={signature.height}
                     rotation={signature.rotation}
                     fontSize={24}
-                    fontFamily={signature.font || 'Arial'}
+                    fontFamily={signature.fontClass || 'Helvetica'}
                     fill="black"
                     ref={shapeRef as React.RefObject<Konva.Text>}
                     draggable
