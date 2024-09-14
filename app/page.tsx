@@ -1,5 +1,6 @@
 'use client'
-import React, { FC, useState } from 'react';
+
+import React, { FC, useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -13,31 +14,69 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import FilePicker from '@/components/FilePicker';
 import TypeSignature from '@/components/TypeSignature';
 import DrawSignature from '@/components/DrawSignature';
-import Draggable from 'react-draggable';
+import { Stage, Layer } from 'react-konva';
+import Konva from 'konva';
+import SignatureImage from '@/components/SignatureImage';
+
+interface SignatureData {
+  type: 'draw' | 'type' | 'file';
+  content: string;
+  font?: string;
+}
+
+interface Signature extends SignatureData {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  rotation: number;
+}
 
 const Home: FC = () => {
-  const [drawSignature, setDrawSignature] = useState<string | undefined>(undefined);
-  const [typeSignature, setTypeSignature] = useState<{ text: string; font: string } | undefined>(undefined);
-  const [fileSignature, setFileSignature] = useState<string | undefined>(undefined);
+  const [signatures, setSignatures] = useState<Signature[]>([]);
+  const [selectedId, selectShape] = useState<number | null>(null);
+  const [stageSize] = useState({ width: 800, height: 600 });
 
-  const generateSVG = (text: string, font: string) => {
-    const svgString = `
-      <svg xmlns="http://www.w3.org/2000/svg" width="200" height="50">
-        <text x="10" y="40" class="${font}">${text}</text>
-      </svg>`;
-    return `data:image/svg+xml;base64,${btoa(svgString)}`;
+  const checkDeselect = (e: Konva.KonvaEventObject<MouseEvent | TouchEvent>) => {
+    const clickedOnEmpty = e.target === e.target.getStage();
+    if (clickedOnEmpty) {
+      selectShape(null);
+    }
   };
 
+  const addSignature = useCallback((type: 'draw' | 'type' | 'file', content: string, font?: string) => {
+    const newSignature: Signature = {
+      type,
+      content,
+      font,
+      x: Math.random() * (stageSize.width - 100),
+      y: Math.random() * (stageSize.height - 50),
+      width: 200,
+      height: 100,
+      rotation: 0,
+    };
+    setSignatures((prev) => [...prev, newSignature]);
+  }, [stageSize]);
+
+  const updateSignature = useCallback((index: number, newAttrs: Partial<Signature>) => {
+    setSignatures(signatures.map((sig, i) => {
+      if (i === index) {
+        return { ...sig, ...newAttrs };
+      }
+      return sig;
+    }));
+  }, [signatures]);
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+    <div className="flex flex-col items-center justify-center min-h-screen p-8 font-[family-name:var(--font-geist-sans)]">
       <Dialog>
         <DialogTrigger>
-          <Button variant="outline">Sign PDF</Button>
+          <Button variant="outline">Add Signature</Button>
         </DialogTrigger>
         <DialogContent className='sm:max-w-[425px]'>
           <DialogHeader>
-            <DialogTitle>Sign PDF</DialogTitle>
-            <DialogDescription>Sign your PDF here</DialogDescription>
+            <DialogTitle>Add a Signature</DialogTitle>
+            <DialogDescription>Choose a method to add your signature</DialogDescription>
           </DialogHeader>
           <Tabs defaultValue="draw" className='w-[400px]'>
             <TabsList>
@@ -46,20 +85,48 @@ const Home: FC = () => {
               <TabsTrigger value="type">Type</TabsTrigger>
             </TabsList>
             <TabsContent value="draw" className='pr-5'>
-              <DrawSignature setDrawSignature={setDrawSignature} />
+              <DrawSignature setDrawSignature={(content: string) => addSignature('draw', content)} />
             </TabsContent>
             <TabsContent value="file-picker" className='pr-5'>
-              <FilePicker setFileSignature={setFileSignature} />
+              <FilePicker setFileSignature={(content: string) => addSignature('file', content)} />
             </TabsContent>
             <TabsContent value="type" className='pr-5'>
-              <TypeSignature setTypeSignature={setTypeSignature} />
+              <TypeSignature setTypeSignature={({ text, font }) => addSignature('type', text, font)} />
             </TabsContent>
           </Tabs>
         </DialogContent>
       </Dialog>
-      {drawSignature && <Draggable><img src={drawSignature} alt="Drawn signature" /></Draggable>}
-      {typeSignature && <Draggable><img src={generateSVG(typeSignature.text, typeSignature.font)} alt="Typed signature" /></Draggable>}
-      {fileSignature && <Draggable><img src={fileSignature} alt="Uploaded signature" /></Draggable>}
+
+      <div className="mt-8 border border-gray-300 rounded">
+        <Stage
+          width={stageSize.width}
+          height={stageSize.height}
+          onMouseDown={checkDeselect}
+          onTouchStart={checkDeselect}
+        >
+          <Layer>
+            {signatures.map((sig, i) => (
+              <SignatureImage
+                key={i}
+                signature={sig}
+                isSelected={i === selectedId}
+                onSelect={() => selectShape(i)}
+                onChange={(newAttrs) => updateSignature(i, newAttrs)}
+              />
+            ))}
+          </Layer>
+        </Stage>
+      </div>
+
+      <div className="mt-4 space-x-2">
+        <Button onClick={() => setSignatures([])}>Clear All</Button>
+        <Button onClick={() => {
+          if (selectedId !== null) {
+            setSignatures(signatures.filter((_, i) => i !== selectedId));
+            selectShape(null);
+          }
+        }}>Delete Selected</Button>
+      </div>
     </div>
   );
 };

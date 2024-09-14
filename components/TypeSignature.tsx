@@ -20,8 +20,14 @@ const TypeSignature: FC<TypeSignatureProps> = ({ setTypeSignature }) => {
     const [signatureText, setSignatureText] = useState('');
 
     const handleTextChange = (e: ChangeEvent<HTMLInputElement>) => {
-        setSignatureText(e.target.value);
-        setTypeSignature({ text: e.target.value, font: selectedFont });
+        const newText = e.target.value;
+        setSignatureText(newText);
+        setTypeSignature({ text: newText, font: selectedFont });
+    };
+
+    const handleFontChange = (value: string) => {
+        setSelectedFont(value);
+        setTypeSignature({ text: signatureText, font: value });
     };
 
     return (
@@ -32,15 +38,13 @@ const TypeSignature: FC<TypeSignatureProps> = ({ setTypeSignature }) => {
             <CardContent>
                 <Input
                     placeholder="Your Name"
+                    value={signatureText}
                     onChange={handleTextChange}
                     className={clsx(`${selectedFont === 'mono' ? 'font-mono' :
                         selectedFont === 'sans' ? 'font-sans' :
                             selectedFont === 'cursive' ? 'font-playwrite' : ''} mb-5`)}
                 />
-                <Select value={selectedFont} onValueChange={(value) => {
-                    setSelectedFont(value);
-                    setTypeSignature({ text: signatureText, font: value });
-                }}>
+                <Select value={selectedFont} onValueChange={handleFontChange}>
                     <SelectTrigger>
                         <SelectValue placeholder='Select a font' />
                     </SelectTrigger>

@@ -7,11 +7,14 @@ import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { EraserIcon } from '@radix-ui/react-icons';
 
-// @ts-expect-error Binding element 'setDrawSignature' implicitly has an 'any' type.
-const DrawSignature = ({ setDrawSignature }) => {
+interface DrawSignatureProps {
+    setDrawSignature: (signature: string) => void;
+}
+
+const DrawSignature: React.FC<DrawSignatureProps> = ({ setDrawSignature }) => {
     const [color, setColor] = useState("#000")
     const [brushRadius, setBrushRadius] = useState(10)
-    const canvasRef = useRef(null)
+    const canvasRef = useRef<CanvasDraw>(null)
 
     const handleErase = () => {
         setColor("#fff")
@@ -19,13 +22,14 @@ const DrawSignature = ({ setDrawSignature }) => {
     }
 
     const handleSave = () => {
-        // @ts-expect-error 'canvasRef.current' is possibly 'null'
-        setDrawSignature(canvasRef.current.canvasContainer.children[1].toDataURL())
+        if (canvasRef.current) {
+            // @ts-expect-error Property 'canvasContainer' does not exist on type 'CanvasDraw'.
+            setDrawSignature(canvasRef.current.canvasContainer.children[1].toDataURL())
+        }
     }
 
     return (
         <Card>
-
             <CardHeader>
                 <CardTitle>Draw your signature</CardTitle>
                 <div className='flex space-x-2 py-2'>
@@ -43,7 +47,6 @@ const DrawSignature = ({ setDrawSignature }) => {
             <CardContent>
                 <CanvasDraw brushRadius={brushRadius} canvasWidth={350} ref={canvasRef} brushColor={color} />
             </CardContent>
-
         </Card>
     )
 }
