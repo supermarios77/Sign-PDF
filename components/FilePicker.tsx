@@ -11,7 +11,7 @@ const FilePicker = ({ setFileSignature }) => {
 
     // @ts-expect-error Parameter 'e' implicitly has an 'any' type.
     const handleFileChange = (e) => {
-        const fileURL = e.target.files[0]
+        const fileURL = URL.createObjectURL(e.target.files[0])
         setPreview(fileURL)
         setFileSignature(fileURL)
     }

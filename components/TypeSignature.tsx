@@ -1,8 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
-'use client';
-
-import React, { useState } from 'react';
+'use client'
+import React, { ChangeEvent, FC, useState } from 'react';
 import {
     Select,
     SelectContent,
@@ -14,16 +11,18 @@ import { Input } from './ui/input'
 import { Card, CardHeader, CardTitle, CardContent } from './ui/card';
 import clsx from 'clsx';
 
-// @ts-expect-error Binding element 'setTypeSignature' implicitly has an 'any' type.
-const TypeSignature = ({ setTypeSignature }) => {
-    const [selectedFont, setSelectedFont] = useState('mono')
-    const [signatureText, setSignatureText] = useState('')
+interface TypeSignatureProps {
+    setTypeSignature: (signature: { text: string; font: string }) => void;
+}
 
-    // @ts-expect-error Parameter 'e' implicitly has an 'any' type.
-    const handleTextChange = (e) => {
-        setSignatureText(e.target.value)
+const TypeSignature: FC<TypeSignatureProps> = ({ setTypeSignature }) => {
+    const [selectedFont, setSelectedFont] = useState('mono');
+    const [signatureText, setSignatureText] = useState('');
+
+    const handleTextChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setSignatureText(e.target.value);
         setTypeSignature({ text: e.target.value, font: selectedFont });
-    }
+    };
 
     return (
         <Card>
@@ -31,17 +30,16 @@ const TypeSignature = ({ setTypeSignature }) => {
                 <CardTitle>Type in your Signature</CardTitle>
             </CardHeader>
             <CardContent>
-
-                <Input placeholder="Your Name"
+                <Input
+                    placeholder="Your Name"
                     onChange={handleTextChange}
                     className={clsx(`${selectedFont === 'mono' ? 'font-mono' :
                         selectedFont === 'sans' ? 'font-sans' :
                             selectedFont === 'cursive' ? 'font-playwrite' : ''} mb-5`)}
                 />
-
                 <Select value={selectedFont} onValueChange={(value) => {
-                    setSelectedFont(value)
-                    setTypeSignature({ text: signatureText, font: value })
+                    setSelectedFont(value);
+                    setTypeSignature({ text: signatureText, font: value });
                 }}>
                     <SelectTrigger>
                         <SelectValue placeholder='Select a font' />
@@ -54,7 +52,7 @@ const TypeSignature = ({ setTypeSignature }) => {
                 </Select>
             </CardContent>
         </Card>
-    )
-}
+    );
+};
 
-export default TypeSignature
+export default TypeSignature;
