@@ -1,36 +1,25 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Sign PDF
 
-## Getting Started
+Simple PDF signing tool built with Next.js
 
-First, run the development server:
+> **Not maintained.** This project is no longer actively developed.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Demo
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Live at [sign-pdf-nu.vercel.app](https://sign-pdf-nu.vercel.app)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Overview
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Upload a PDF, draw or type your signature, place it on the document, and download the signed copy. No account required.
 
-## Learn More
+## Features
 
-To learn more about Next.js, take a look at the following resources:
+- **Upload PDF:** drag and drop or select a PDF file.
+- **Draw or type signature:** sign with a mouse, trackpad, or typed text.
+- **Position signature:** drag the signature to the right spot on the page.
+- **Download:** export the signed PDF immediately.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Tech stack
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Framework:** Next.js
+- **Language:** TypeScript
